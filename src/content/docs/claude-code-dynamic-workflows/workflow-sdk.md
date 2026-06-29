@@ -106,6 +106,22 @@ stateDiagram-v2
 
 ✅ **Required.** Every script must begin with a pure-literal `export const meta`.
 
+```mermaid
+flowchart LR
+    meta["export const meta"] --> name["name\nrequired · command identifier"]
+    meta --> desc["description\nrequired · permission dialog"]
+    meta --> wtu["whenToUse?\nworkflow list display"]
+    meta --> phases["phases?\n[ title · detail? · model? ]"]
+    meta --> model["model?\nrun-level default"]
+    phases --> pt["phases[].title\nmatched exactly to phase() calls"]
+    phases --> pd["phases[].detail · phases[].model\ndisplay only · model has no routing effect"]
+    model -.->|"⚠ no observable routing"| warn["agent(prompt, { model })\nonly reliable model route ✅"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class meta,name,desc,wtu,phases,pt,pd,model std
+    class warn accent
+```
+
 ### Signature
 
 ```ts
@@ -345,6 +361,22 @@ try { await workflow('maybe-missing') } catch (e) { /* catchable, run continues 
 
 ## 5. Globals
 
+The script body receives a small set of injected globals grouped by function: input (`args`), budget awareness (`budget`), timing (`setTimeout`), progress reporting (`phase`, `log`, `console`), and agent spawning (`agent`, `parallel`, `pipeline`, `workflow`).
+
+```mermaid
+flowchart TD
+    G["Injected globals"] --> IN["Input\nargs — arrives as string; JSON.parse it"]
+    G --> BU["Budget\nbudget · total · spent() · remaining()"]
+    G --> TM["Timing\nsetTimeout · clearTimeout\nreal host timers — setInterval absent"]
+    G --> PR["Progress reporting\nphase() · log() · console\nconsole routes to hooks.log"]
+    G --> AS["Agent spawning\nagent() · parallel() · pipeline()"]
+    G --> WF["Orchestration\nworkflow() — one level only"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class G accent
+    class IN,BU,TM,PR,AS,WF std
+```
+
 ### `args`
 
 ⚠️ **Arrives as a STRING.** The value passed to Workflow's `args` input — but even a JSON array/object is delivered as a string in this harness.
@@ -450,6 +482,19 @@ flowchart TB
 
 ⚠️ The runtime **statically rejects** non-deterministic calls at submit time (to keep resume caching valid). The error is returned from the launch call and **cannot** be caught in-script.
 
+```mermaid
+flowchart TD
+    S["Script submitted"] --> LA["Layer A — submit-time token scan\ntool layer ~186M\nscans raw source text before run starts"]
+    LA -->|"Date.now / Math.random\nnew Date( token found"| REJ["Run REJECTED\nbefore any agent starts\nerror returned to caller — not catchable"]
+    LA -->|"no banned tokens"| LB["Layer B — runtime shims\nVM layer ~208M — defense in depth"]
+    LB --> SH1["Math.random() — throws Error\nDate.now() / bare Date() — throws Error\nnew Date() — throws Error"]
+    LB --> SH2["new Date(x) with argument\nallowed at runtime\nbut still blocked by Layer A token scan"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class S,LA,LB,SH2 std
+    class REJ,SH1 accent
+```
+
 | Banned token | Use instead |
 |--------------|-------------|
 | `Date.now()` | stamp results after the workflow returns, or pass a timestamp via `args` (then `JSON.parse`) |
@@ -472,6 +517,20 @@ Also banned: TypeScript syntax, filesystem access, Node APIs.
 | Total agents per run | 1000 | 🔎 Source (`qol=1000`); cap message guides guarding `budget.total` loops |
 | Per-agent stall timeout | 180000 ms | 🔎 Source (`stallMs` opt default) |
 | VM synchronous-slice timeout | 30000 ms | 🔎 Source — only bounds sync code between awaits |
+
+```mermaid
+flowchart LR
+    RUN["Workflow run"] --> CC["Concurrency cap\nmin(16, max(2, cpus-2))\nfloor 2 · ceiling 16"]
+    RUN --> CAP["Agent lifetime cap\n1000 total agent() calls\nguard with budget loops"]
+    RUN --> VM["VM sync timeout\n30 000 ms\nsync slices only — not await time"]
+    RUN --> STL["Per-agent stall timeout\n180 000 ms default\nstallMs opt overrides per agent"]
+    RUN --> ARR["VM boundary array cap\n4096 items per call\ncatchable with try/catch"]
+    RUN --> NEST["workflow() nesting depth\n1 level maximum\ncatchable in child"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class RUN,VM,STL,ARR,NEST std
+    class CC,CAP accent
+```
 
 ### Resume — ✅ Verified
 

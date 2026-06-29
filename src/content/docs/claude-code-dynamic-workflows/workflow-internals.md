@@ -17,6 +17,17 @@ badge: "Reverse Engineered"
 
 The workflow runtime lives in two code regions: a **tool-layer validator** (~byte 186M) and the **VM runtime** (~byte 208M). The split matters — see Section 4.
 
+```mermaid
+flowchart TD
+    BIN["~/.local/bin/claude\nMach-O arm64 · ~212 MB\nBun single-file executable"] --> EMB["Embedded plaintext JS\ngreppable in binary\nvirtual FS: /$bunfs/root/.../cli.js"]
+    BIN --> TL["Tool-layer validator\n~byte 186M\nsubmit-time static scan — Layer A"]
+    BIN --> VMR["VM runtime\n~byte 208M\nV8 context execution — Layer B"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class BIN,EMB std
+    class TL,VMR accent
+```
+
 ## 2. Engine: it's `node:vm`, not a Worker
 
 The script does **not** run in a Worker thread or `isolated-vm`. It runs in an in-process **V8 context** via Node's built-in `vm` module:
@@ -60,7 +71,34 @@ Before the script runs, the runtime **locks the guest realm**. Observed in the b
 
 This is sandbox-escape defense, not just ergonomics — the comments literally call guest values "attacker-reachable."
 
+```mermaid
+flowchart TD
+    FZ["Deep freeze — guest realm locked before script runs"] --> P1["Prototypes and constructors\nObject · Array · Function · Date · RegExp\nPromise · Map · Set · WeakMap · WeakSet\nString · Number · Boolean · Symbol · BigInt\nArrayBuffer · DataView · URL · Intl\nTypedArrays · Error subclasses"]
+    FZ --> P2["Namespace objects — no .prototype\nJSON · Math · Reflect · Proxy\nfrozen to block .then thenable escapes"]
+    FZ --> P3["Async and generator function constructors\nDisposableStack"]
+    FZ -.->|"exceptions via enableOverride()"| EX["toString · constructor\nname · length\nstill overridable"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class FZ,P1,P3 std
+    class P2,EX accent
+```
+
 ## 4. Determinism: two enforcement layers
+
+Determinism is enforced in two independent layers: a static token scan at submit time (Layer A) and runtime shims inside the VM (Layer B). Layer A is the uncatchable gate; Layer B is defense-in-depth.
+
+```mermaid
+flowchart TD
+    S["Workflow script submitted"] --> LA["Layer A — submit-time static scan\ntool layer ~186M\ntoken scan on raw source text"]
+    LA -->|"Date.now / Math.random\nnew Date( token found"| REJ["Run REJECTED\nbefore any agent starts\nuncatchable — returned from launch call"]
+    LA -->|"no banned tokens"| LB["Layer B — runtime shims\nVM layer ~208M\ndefense in depth after Layer A"]
+    LB --> SH1["Math.random() — throw Error(RANDOM_ERR)\nDate.now() / bare Date() — throw Error(NOW_ERR)\nnew Date() — throw Error(NOW_ERR)"]
+    LB --> SH2["new Date(x) — ALLOWED at runtime\nbut Layer A token scan still blocks new Date(\nbackdoor via .constructor also closed"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class S,LA,LB,SH2 std
+    class REJ,SH1 accent
+```
 
 ### Layer A — submit-time static scan (tool layer, ~186M)
 
@@ -123,6 +161,24 @@ The globals object handed to `createContext` (host functions wrapped through the
 Object.defineProperty(ctx, "args", { value: …, writable: true, enumerable: true, configurable: true })
 ```
 
+```mermaid
+flowchart LR
+    H["Host realm\nClaude Code process"] --> MEM["membrane\nwrap() · cloneOpts()"]
+    MEM --> G["Guest context\nvm.createContext(globals)"]
+    TM["host.timers\nsetTimeout · clearTimeout"] --> MEM
+    HK["hooks\nlog · phase · agent\nparallel · pipeline"] --> MEM
+    G --> BU["budget\n(token budget object)"]
+    G --> TMG["setTimeout · clearTimeout\nreal host timers — setInterval absent"]
+    G --> PRG["phase · log · console\nconsole.* routes to hooks.log"]
+    G --> AGG["agent · parallel · pipeline"]
+    G --> WFG["workflow\nor rejecting stub in child context"]
+    ARGS["args\nattached via Object.defineProperty"] --> G
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class H,MEM,TM,HK,PRG,AGG,WFG,ARGS std
+    class G,BU,TMG accent
+```
+
 Explains the black-box surprises:
 
 - **`console.log` "works"** because `console` is a shim whose every method calls `hooks.log` — output shows up as a workflow narrator line, not real stdout.
@@ -145,9 +201,39 @@ array length <N> exceeds the maximum of 4096 supported across the workflow VM bo
 
 So the **4096-item cap is a marshalling limit**, not a scheduler limit — it's the max array length the cloner will carry across the boundary in one call. (It is catchable because it throws as a normal rejection during the `parallel`/`pipeline` call.)
 
+```mermaid
+flowchart LR
+    HV["host value"] --> BC["boundary cloner\nstructured-clone-like\nguards against attacker-reachable parent-VM values"]
+    BC --> CK{"is it an array?"}
+    CK -->|"no"| GV["cloned guest value"]
+    CK -->|"yes"| LCK{"length check"}
+    LCK -->|"length <= 4096"| GV
+    LCK -->|"length > 4096\nor not a safe integer\nor unreadable"| ERR["throw Error\narray length N exceeds 4096\ncatchable via try/catch"]
+    GV --> USE["available in script"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class HV,BC,CK,LCK,GV,USE std
+    class ERR accent
+```
+
 ## 7. The `args` stringification — root cause
 
 Two different code paths attach `args`, and they behave differently:
+
+```mermaid
+flowchart TD
+    subgraph TL["Top-level workflow — Workflow tool path"]
+        H1["host args value"] -->|"JSON.stringify(s)"| S1["JSON string\nvalue encoded once"]
+        S1 -->|"vm.runInContext(JSON.parse(...))"| A1["args in script = STRING\ntypeof args === 'string'\nJSON.parse(args) required"]
+    end
+    subgraph CW["Child workflow — workflow() call path"]
+        H2["parent workflow value"] -->|"clone(o)\nstructured-clone"| A2["args in script = OBJECT\ntypeof args === 'object'\nno JSON.parse needed"]
+    end
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class H1,S1,H2 std
+    class A1,A2 accent
+```
 
 ```js
 // top-level workflow path (the one the Workflow tool uses):
@@ -174,6 +260,19 @@ vm.runInContext(compiledScript, ctx, { timeout: 30000 })   // AGn = 30000
 
 The `vm` timeout bounds **synchronous** execution only. Awaiting an `agent()` (which suspends back to the host) does not count, so multi-minute workflows run fine — but a **synchronous infinite loop** in the script body is killed at ~30 s. There is no total wall-clock cap from this knob (the 1000-agent cap is the runaway backstop instead).
 
+```mermaid
+flowchart LR
+    VM["vm.runInContext\ntimeout: 30 000 ms"] --> SY["Synchronous code\nloops · conditionals · assignments\nbetween awaits — counts against 30 s"]
+    SY -->|"synchronous infinite loop"| TO["killed after ~30 s"]
+    SY -->|"await agent(...)"| SUSP["suspends to host\ntimer effectively paused\nagent runs — no 30 s cap here"]
+    SUSP -->|"agent completes"| SY
+    CAP["1000-agent cap\nrunaway backstop"] -.->|"no total wall-clock cap\nfrom the 30 s knob"| VM
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class VM,SY,SUSP,CAP std
+    class TO accent
+```
+
 ## 9. Run-state model
 
 The task registry entry for a run (field names from the bundle):
@@ -188,6 +287,19 @@ logs[], abortController, agentControllers: Map
 - `agentControllers` (a `Map`) is how individual agents are stopped/restarted from `/workflows`.
 - `workflowProgress[]` + `progressVersion` drive the live progress view.
 - Resume works by replaying cached agent results against this journal — consistent with the observed 0-token, 15 ms cache-hit re-run.
+
+```mermaid
+flowchart TD
+    REG["Task registry entry"] --> ID["Identity\ntaskId · type: local_workflow\nworkflowName · title · defaultModel"]
+    REG --> EX["Execution state\nstatus · script · scriptPath\nargs · workflowRunId · summary"]
+    REG --> PR["Progress tracking\nworkflowProgress[] · progressVersion\nphases"]
+    REG --> RES["Metrics\nagentCount · totalTokens\ntotalToolCalls · logs[]"]
+    REG --> CTL["Control handles\nabortController\nagentControllers: Map\nstop / restart individual agents"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class REG,ID,EX std
+    class PR,RES,CTL accent
+```
 
 ## 10. How black-box findings map to the source
 

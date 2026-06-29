@@ -283,6 +283,28 @@ Why: transparent cost, and a sanity check against the 1000-agent cap.
 
 ### The two shapes side by side
 
+```mermaid
+flowchart LR
+    subgraph CR["code-review"]
+        direction TB
+        CR1["Scope\ndiff cmd · angles · conventions"] --> CR2["Find\n1 finder per correctness + cleanup angle"]
+        CR2 --> CR3["Verify\n1 independent verifier per candidate\nCONFIRMED · PLAUSIBLE · REFUTED"]
+        CR3 --> CR4["Sweep\ngap-only finder · xhigh/max only"]
+        CR4 --> CR5["Synthesize\nmerge dups · rank · cap maxFindings"]
+    end
+    subgraph DR["deep-research"]
+        direction TB
+        DR1["Scope\nresearch angles + sub-questions"] --> DR2["Find\nWebSearch per angle"]
+        DR2 --> DR3["Extract\nWebFetch → claims + source quality"]
+        DR3 --> DR4["Verify\n3-vote adversarial quorum per claim\nquorum guard · abstain ≠ pass"]
+        DR4 --> DR5["Synthesize\ncited report · dedup · cap"]
+    end
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class CR1,CR2,CR4,CR5,DR1,DR2,DR3,DR5 std
+    class CR3,DR4 accent
+```
+
 | Stage | `code-review` | `deep-research` |
 |-------|---------------|-----------------|
 | Scope | diff cmd, files, conventions, angles | research angles + sub-questions |
@@ -320,6 +342,20 @@ Every pattern composes one primitive: an LLM with **retrieval + tools + memory**
 
 ```js
 const r = await agent(PROMPT, { schema: OUT, model: "claude-sonnet-4-6", effort: "high" })
+```
+
+```mermaid
+flowchart LR
+    LLM["LLM\nbase model"] --> AUG["Augmented LLM\nagent() call"]
+    RET["Retrieval\ntool use · search"] --> AUG
+    TOL["Tools\nRead · Bash · WebFetch · MCP"] --> AUG
+    MEM["Memory\ncontext window · schema output"] --> AUG
+    AUG --> OPT["Augmentation knobs\nmodel · effort · schema\nlabel · phase · agentType · isolation"]
+    AUG --> OUT["Output\nstring · validated object · null"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class LLM,RET,TOL,MEM std
+    class AUG,OPT,OUT accent
 ```
 
 Everything below is **how you wire many of these together**. S1's prime directive: *don't* — until a single augmented call provably falls short.
@@ -580,6 +616,23 @@ flowchart LR
 
 ### Production rules of thumb (S2)
 
+```mermaid
+flowchart TD
+    COST["Token economics\nmulti-agent ≈ 15× chat cost\n80% of performance variance"] --> SF["Scale effort to complexity\nfacts → 1 agent\ncomparison → 2-4 agents\ndeep research → 10+ agents"]
+    COST --> BG["Gate on budget\nbudget.remaining() > threshold\nlog cost with log()"]
+    SF --> PR["Design principles"]
+    BG --> PR
+    PR --> D1["Scope broadly then narrow\nbroad scout first · seed workers from output"]
+    PR --> D2["Teach delegation clearly\nobjective · format · sources · boundaries"]
+    PR --> D3["Pass IDs not blobs\nfilesystem over telephone game\navoid 4096-item / 400-char preview clip"]
+    PR --> D4["LLM-as-judge\n1 call · 0.0-1.0 rubric · pass/fail\nsingle call beat multi-call in production"]
+    PR --> D5["Checkpoints + resume\nresumable = 0 tokens on replay\nnull-on-failure + filter(Boolean)"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class COST accent
+    class SF,BG,PR,D1,D2,D3,D4,D5 std
+```
+
 | S2 lesson | SDK expression |
 |-----------|----------------|
 | **Scale effort to query complexity** — 1 agent for facts, 2-4 for comparisons, 10+ for deep research | Branch fan-out on `budget.total` / a complexity score: `const FLEET = budget.total ? Math.floor(budget.total/100_000) : 4`. Mirrors the binary `PARAMS[effort]` table. |
@@ -594,6 +647,21 @@ flowchart LR
 ---
 
 ### Two-dimensional taxonomy (S4) → SDK
+
+```mermaid
+flowchart LR
+    T["Execution topology"] --> CH["Chain\nsequential await\nor 1-item pipeline"]
+    T --> RT["Route\nswitch / map over agent()"]
+    T --> PA["Parallel\nparallel() barrier"]
+    T --> OR["Orchestrate\nlead agent() → parallel/pipeline workers"]
+    T --> LO["Loop\nfor/while budget-gated around agent()"]
+    T --> HI["Hierarchy\nworkflow() — one level only"]
+    COG["Cognitive function\nreasoning · reflection · collaboration\nmemory · governance\ncarried inside agent() via\nprompt + effort + schema"] -.->|"orthogonal axis\nscript owns topology\nagent owns cognition"| T
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class T accent
+    class CH,RT,PA,OR,LO,HI,COG std
+```
 
 | Topology (S4/S5) | SDK construct |
 |------------------|---------------|
@@ -628,6 +696,27 @@ flowchart TD
 
 ### Master map: canonical pattern → SDK → also in the shipped workflows?
 
+```mermaid
+flowchart LR
+    subgraph SHIP["Used in shipped workflows"]
+        P1["Orchestrator-workers\nPatterns A1+A2 — the backbone"]
+        P2["Parallelization — sectioning\nPattern A2 — finder fan-out"]
+        P3["Parallelization — voting\nPattern A4 — 3-vote quorum"]
+        P4["Evaluator / reflection\nPattern A3 — independent verifier"]
+        P5["Map-reduce\nPattern A5 — dedup at synthesis"]
+        P6["Effort scaling\nPattern A8 — PARAMS[effort] table"]
+    end
+    subgraph NOSHIP["Expressible but not in shipped workflows"]
+        Q1["Routing\nno runtime branching in the two scripts"]
+        Q2["Evaluator-optimizer loops\ngenerate then critique loop"]
+        Q3["Autonomous agent delegation\nagentType + isolation worktree"]
+    end
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class P1,P2,P3,P4,P5,P6 accent
+    class Q1,Q2,Q3 std
+```
+
 | Canonical pattern (S1/S3) | SDK primitive | Found in binary? |
 |---------------------------|---------------|------------------|
 | Prompt chaining | sequential `await` / 1-item `pipeline` | partial (Scope→Find→Verify is a chain of phases) |
@@ -647,6 +736,23 @@ flowchart TD
 ---
 
 ## Takeaways for writing your own
+
+```mermaid
+flowchart TD
+    START["10. Start: try one agent() first\nonly add topology when it provably falls short"] --> SC["1. Scope agent first\nemit a typed work-list"]
+    SC --> FV["2. pipeline find → verify\nstreaming — no barrier unless cross-item reduction needed"]
+    FV --> VE["3. One adversarial verifier per item\nstructured verdict · evidence required"]
+    VE --> QU["4. Vote when no ground truth\nquorum guard · abstain must not pass"]
+    QU --> DD["5. Dedup only at synthesis\nverify everything first · collapse at the end"]
+    DD --> SW["6. Gap sweep at high effort\nknown list injected · return empty rather than pad"]
+    SW --> EX["7. Early-exit on zero survivors\nreturn honest negative result with stats"]
+    EX --> KN["8. Breadth = effort table\nDepth = opts.effort\northogonal knobs — max vs xhigh changes reasoning not fan-out"]
+    KN --> EC["9 + 11 + 12. Cap and rank output\nname stopping criteria before any loop\nbudget gate — 15× cost · log() cost"]
+    classDef accent fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
+    classDef std fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class START accent
+    class SC,FV,VE,QU,DD,SW,EX,KN,EC std
+```
 
 1. **Scope agent first**, emit a typed work-list.
 2. **`pipeline` find→verify** so verification streams; reserve `parallel` barriers for genuine cross-item reductions.
