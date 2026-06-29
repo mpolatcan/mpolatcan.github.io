@@ -24,7 +24,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   <meta name="description" content="Platform Engineer — Kubernetes, AWS, Go. Writing about infrastructure, tooling, and AI workflows." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
 
@@ -201,14 +201,14 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #080B10;
-    --surface: #0F1419;
-    --surface-hover: #141C25;
-    --border: #1E2830;
-    --text: #E8E4DB;
-    --text-muted: #8A9BB0;
-    --accent: #6EE7B7;
-    --accent-dim: rgba(110, 231, 183, 0.08);
+    --bg: #07071A;
+    --surface: #0D0D24;
+    --surface-hover: #13132C;
+    --border: #1E1E38;
+    --text: #ECEAF5;
+    --text-muted: #7C7BA0;
+    --accent: #A78BFA;
+    --accent-dim: rgba(167, 139, 250, 0.08);
     --max-w: 860px;
   }
 
@@ -223,7 +223,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
     font-size: 16px;
@@ -325,8 +325,8 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     padding: 88px 32px 80px;
     border-bottom: 1px solid var(--border);
     position: relative;
-    background-image: radial-gradient(circle, rgba(110, 231, 183, 0.1) 1px, transparent 1px);
-    background-size: 28px 28px;
+    background: radial-gradient(ellipse 75% 65% at 15% 55%, rgba(167, 139, 250, 0.11) 0%, transparent 65%),
+                radial-gradient(ellipse 45% 50% at 85% 15%, rgba(167, 139, 250, 0.06) 0%, transparent 60%);
     overflow: hidden;
   }
 
@@ -350,13 +350,13 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-muted);
     font-family: 'JetBrains Mono', monospace;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
   }
 
   .status-dot {
@@ -374,22 +374,25 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
 
   .hero-name {
     font-family: 'DM Serif Display', serif;
-    font-size: clamp(3.5rem, 8vw, 6rem);
+    font-size: clamp(4.2rem, 13vw, 8rem);
     font-weight: 400;
-    line-height: 1.0;
-    margin-bottom: 28px;
-    letter-spacing: -0.01em;
+    line-height: 0.88;
+    margin-bottom: 32px;
+    letter-spacing: -0.03em;
   }
 
   .hero-name em {
     font-style: italic;
-    color: var(--accent);
+    background: linear-gradient(150deg, #DDD6FE 0%, #A78BFA 55%, #C4B5FD 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hero-bio {
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     color: var(--text-muted);
-    line-height: 1.7;
+    line-height: 1.75;
     max-width: 520px;
     margin-bottom: 32px;
   }
@@ -444,7 +447,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
 
   .link-btn.secondary {
     background: var(--accent);
-    color: #080B10;
+    color: var(--bg);
     font-weight: 600;
   }
 
@@ -460,9 +463,9 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   }
 
   .section-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-muted);
     font-family: 'JetBrains Mono', monospace;
@@ -713,7 +716,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
       gap: 40px;
     }
 
-    .hero-name { font-size: 3rem; }
+    .hero-name { font-size: 3.5rem; line-height: 0.9; }
     .projects-grid { grid-template-columns: 1fr; }
   }
 </style>
