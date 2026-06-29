@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import DocLayout from '../../layouts/DocLayout.astro';
+
+const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<DocLayout title="Notes" description="Claude Code Workflow Reference — reverse-engineered internals, SDK reference, and design patterns.">
+  <div class="notes-header">
+    <span class="eyebrow">Notes</span>
+    <h1>Claude Code Workflow Reference</h1>
+    <p>Unofficial, community-maintained reference for Claude Code's Workflow scripting API — reverse-engineered from the binary. These docs cover what the official site doesn't.</p>
+  </div>
+
+  <div class="doc-list">
+    {docs.map((doc, i) => (
+      <a href={`/notes/${doc.id.replace('.md', '')}/`} class="doc-item">
+        <span class="doc-num">{String(i + 1).padStart(2, '0')}</span>
+        <div class="doc-info">
+          <span class="doc-badge">{doc.data.badge}</span>
+          <span class="doc-title">{doc.data.title}</span>
+          {doc.data.description && <span class="doc-desc">{doc.data.description}</span>}
+        </div>
+        <span class="doc-arrow">→</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="notes-meta">
+    <span>v2.1.193 binary</span>
+    <span>·</span>
+    <span>Not affiliated with Anthropic</span>
+  </div>
+</DocLayout>
+
+<style>
+  .notes-header {
+    margin-bottom: 48px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 12px;
+  }
+
+  .notes-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .notes-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+    max-width: 560px;
+    margin-bottom: 0;
+  }
+
+  .doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+
+  .doc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 18px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+  }
+
+  .doc-item:hover {
+    background: var(--surface-hover);
+  }
+
+  .doc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding-top: 3px;
+    flex-shrink: 0;
+    width: 24px;
+  }
+
+  .doc-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .doc-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .doc-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .doc-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .doc-arrow {
+    color: var(--text-muted);
+    font-size: 16px;
+    padding-top: 2px;
+    flex-shrink: 0;
+    transition: color 0.15s, transform 0.15s;
+  }
+
+  .doc-item:hover .doc-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  .notes-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    gap: 8px;
+  }
+</style>

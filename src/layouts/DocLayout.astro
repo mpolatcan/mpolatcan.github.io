@@ -31,7 +31,26 @@ const currentId = doc?.id;
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script is:inline>
-    mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { background: '#0D1117', primaryColor: '#1E2830', primaryTextColor: '#E8E4DB', lineColor: '#E5884F', edgeLabelBackground: '#0F1419' } });
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('pre code.language-mermaid').forEach(function(el) {
+        var pre = el.parentElement;
+        var div = document.createElement('div');
+        div.className = 'mermaid';
+        div.textContent = el.textContent;
+        pre.replaceWith(div);
+      });
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+          background: '#0D1117',
+          primaryColor: '#1E2830',
+          primaryTextColor: '#E8E4DB',
+          lineColor: '#E5884F',
+          edgeLabelBackground: '#0F1419'
+        }
+      });
+    });
   </script>
 </head>
 <body>
@@ -50,7 +69,7 @@ const currentId = doc?.id;
       <nav class="sidebar-nav">
         {allDocs.map(d => (
           <a
-            href={`/docs/${d.id.replace('.md', '')}/`}
+            href={`/notes/${d.id.replace('.md', '')}/`}
             class:list={['nav-item', { active: d.id === currentId }]}
           >
             <span class="nav-badge">{d.data.badge}</span>

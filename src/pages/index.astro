@@ -1,14 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 
-const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+const notes = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
 
-const stats = [
-  { value: '5', label: 'Documents' },
-  { value: '69K', label: 'Words' },
-  { value: 'v2.1.193', label: 'Binary version' },
-  { value: '100%', label: 'Community-sourced' },
+const projects = [
+  {
+    name: 'mpolatcan.github.io',
+    desc: 'This site — personal blog, notes, and Claude Code workflow reference.',
+    url: 'https://github.com/mpolatcan/mpolatcan.github.io',
+    tag: 'Astro · GitHub Pages',
+  },
 ];
+
+const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafka', 'Helm'];
 ---
 
 <!doctype html>
@@ -16,81 +20,180 @@ const stats = [
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Code Workflow Reference</title>
-  <meta name="description" content="Unofficial, community-maintained reference for Claude Code's Workflow scripting API — reverse-engineered from the binary." />
+  <title>Mutlu Polatcan</title>
+  <meta name="description" content="Platform Engineer — Kubernetes, AWS, Go. Writing about infrastructure, tooling, and AI workflows." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="page">
-    <!-- Topbar -->
-    <header class="topbar">
-      <div class="topbar-inner">
-        <span class="logo-mark">▸</span>
-        <span class="logo-name">CC Workflow Reference</span>
-        <a href="https://github.com/mpolatcan/mpolatcan.github.io" target="_blank" rel="noopener" class="gh-link">GitHub ↗</a>
-      </div>
-    </header>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="topbar-name">MP</a>
+      <nav class="topbar-nav">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#blog">Blog</a>
+        <a href="/notes/">Notes</a>
+        <a href="https://github.com/mpolatcan" target="_blank" rel="noopener" class="gh-btn">GitHub ↗</a>
+      </nav>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <nav class="mobile-nav" id="mobileNav">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#blog">Blog</a>
+      <a href="/notes/">Notes</a>
+      <a href="https://github.com/mpolatcan" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main>
 
     <!-- Hero -->
     <section class="hero">
       <div class="hero-inner">
-        <div class="hero-eyebrow">
-          <span class="eyebrow-dot"></span>
-          Unofficial · Community-maintained · Not affiliated with Anthropic
+        <div class="hero-status">
+          <span class="status-dot"></span>
+          <span>Platform Engineer</span>
         </div>
-
-        <h1 class="hero-title">
-          Claude Code<br/>
-          <em>Workflow Reference</em>
+        <h1 class="hero-name">
+          Mutlu<br/>
+          <em>Polatcan</em>
         </h1>
-
-        <p class="hero-sub">
-          The official docs don't cover it. This does.
-          Reverse-engineered from the shipped binary, verified against live behavior,
-          and organized for the developers who need it now.
+        <p class="hero-bio">
+          Building infrastructure and tooling for distributed systems.
+          Interested in Kubernetes, cloud-native platforms, and developer experience.
+          Occasionally writing about things I figure out the hard way.
         </p>
+        <div class="hero-skills">
+          {skills.map(s => <span class="skill-tag">{s}</span>)}
+        </div>
+        <div class="hero-links">
+          <a href="https://github.com/mpolatcan" target="_blank" rel="noopener" class="link-btn primary">GitHub</a>
+          <a href="/notes/" class="link-btn secondary">Read Notes →</a>
+        </div>
+      </div>
+    </section>
 
-        <div class="hero-stats">
-          {stats.map(s => (
-            <div class="stat">
-              <span class="stat-value">{s.value}</span>
-              <span class="stat-label">{s.label}</span>
+    <!-- About -->
+    <section class="section" id="about">
+      <div class="section-inner">
+        <div class="section-label">About</div>
+        <div class="about-grid">
+          <div class="about-text">
+            <p>
+              I'm a platform engineer focused on making infrastructure less painful.
+              Most of my work lives at the intersection of Kubernetes, cloud automation,
+              and the tooling that lets engineers ship faster without breaking things.
+            </p>
+            <p>
+              This site is where I publish notes on things I'm investigating — currently
+              focused on Claude Code internals, workflow scripting patterns, and whatever
+              else I'm deep in at the time.
+            </p>
+          </div>
+          <div class="about-meta">
+            <div class="meta-item">
+              <span class="meta-label">Location</span>
+              <span class="meta-value">Turkey</span>
             </div>
+            <div class="meta-item">
+              <span class="meta-label">Focus</span>
+              <span class="meta-value">Platform Engineering</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Currently</span>
+              <span class="meta-value">Kubernetes · AWS · Go</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">GitHub</span>
+              <a href="https://github.com/mpolatcan" target="_blank" rel="noopener" class="meta-link">mpolatcan ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="section" id="projects">
+      <div class="section-inner">
+        <div class="section-label">Projects</div>
+        <div class="projects-grid">
+          {projects.map(p => (
+            <a href={p.url} target="_blank" rel="noopener" class="project-card">
+              <div class="project-tag">{p.tag}</div>
+              <div class="project-name">{p.name}</div>
+              <div class="project-desc">{p.desc}</div>
+              <span class="project-arrow">↗</span>
+            </a>
+          ))}
+          <div class="project-card placeholder">
+            <div class="project-tag">Coming soon</div>
+            <div class="project-name">More projects</div>
+            <div class="project-desc">Other repos and tools will appear here.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog -->
+    <section class="section" id="blog">
+      <div class="section-inner">
+        <div class="section-label">Blog</div>
+        <div class="empty-state">
+          <span class="empty-icon">✦</span>
+          <p>No posts yet. Working on it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notes -->
+    <section class="section" id="notes-preview">
+      <div class="section-inner">
+        <div class="section-header-row">
+          <div class="section-label">Notes</div>
+          <a href="/notes/" class="see-all">See all →</a>
+        </div>
+        <p class="section-intro">Reverse-engineered docs for Claude Code's workflow API — what the official docs skip.</p>
+        <div class="notes-list">
+          {notes.map(n => (
+            <a href={`/notes/${n.id.replace('.md', '')}/`} class="note-item">
+              <span class="note-badge">{n.data.badge}</span>
+              <span class="note-title">{n.data.title}</span>
+              <span class="note-arrow">→</span>
+            </a>
           ))}
         </div>
-
-        <a href={`/docs/${docs[0].id.replace('.md', '')}/`} class="cta-btn">
-          Start reading →
-        </a>
       </div>
     </section>
 
-    <!-- Divider -->
-    <div class="section-label">
-      <span>Documentation</span>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>Mutlu Polatcan</span>
+      <span class="footer-sep">·</span>
+      <a href="https://github.com/mpolatcan" target="_blank" rel="noopener">GitHub</a>
+      <span class="footer-sep">·</span>
+      <a href="/notes/">Notes</a>
     </div>
+  </footer>
 
-    <!-- Doc cards -->
-    <section class="cards-section">
-      <div class="cards">
-        {docs.map(doc => (
-          <a href={`/docs/${doc.id.replace('.md', '')}/`} class="card">
-            <div class="card-badge">{doc.data.badge}</div>
-            <h2 class="card-title">{doc.data.title}</h2>
-            <p class="card-desc">{doc.data.description}</p>
-            <span class="card-arrow">Read →</span>
-          </a>
-        ))}
-      </div>
-    </section>
+  <script is:inline>
+    var btn = document.getElementById('mobileMenuBtn');
+    var nav = document.getElementById('mobileNav');
+    btn && btn.addEventListener('click', function() {
+      nav.classList.toggle('open');
+    });
+    nav && nav.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() { nav.classList.remove('open'); });
+    });
+  </script>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>Built by <a href="https://github.com/mpolatcan" target="_blank" rel="noopener">mpolatcan</a> · Not affiliated with Anthropic · Data derived from Claude Code v2.1.193</p>
-    </footer>
-  </div>
 </body>
 </html>
 
@@ -100,74 +203,125 @@ const stats = [
   :root {
     --bg: #080B10;
     --surface: #0F1419;
+    --surface-hover: #141C25;
     --border: #1E2830;
     --text: #E8E4DB;
     --text-muted: #8A9BB0;
     --accent: #E5884F;
     --accent-dim: rgba(229, 136, 79, 0.08);
+    --max-w: 860px;
   }
 
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
+    font-size: 16px;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
-  }
-
-  .page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
   }
 
   /* Topbar */
   .topbar {
-    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
+    z-index: 50;
     background: rgba(8, 11, 16, 0.92);
     backdrop-filter: blur(8px);
-    z-index: 10;
+    border-bottom: 1px solid var(--border);
   }
 
   .topbar-inner {
-    max-width: 1100px;
+    max-width: var(--max-w);
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 32px;
     height: 52px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 32px;
   }
 
-  .logo-mark {
-    color: var(--accent);
+  .topbar-name {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.04em;
   }
 
-  .logo-name {
-    font-size: 14px;
-    font-weight: 600;
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
     flex: 1;
   }
 
-  .gh-link {
+  .topbar-nav a {
     font-size: 13px;
     color: var(--text-muted);
     text-decoration: none;
+    transition: color 0.15s;
   }
-  .gh-link:hover { color: var(--accent); }
+
+  .topbar-nav a:hover { color: var(--text); }
+
+  .gh-btn {
+    margin-left: auto;
+    color: var(--text-muted) !important;
+  }
+  .gh-btn:hover { color: var(--accent) !important; }
+
+  .mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: auto;
+  }
+
+  .mobile-menu-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text-muted);
+    border-radius: 2px;
+  }
+
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    padding: 12px 32px 16px;
+    border-top: 1px solid var(--border);
+    gap: 2px;
+  }
+
+  .mobile-nav.open { display: flex; }
+
+  .mobile-nav a {
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  .mobile-nav a:hover { color: var(--text); }
 
   /* Hero */
   .hero {
-    padding: 96px 40px 72px;
-    max-width: 1100px;
-    margin: 0 auto;
-    width: 100%;
+    padding: 88px 32px 80px;
+    border-bottom: 1px solid var(--border);
   }
 
-  .hero-eyebrow {
+  .hero-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+
+  .hero-status {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -176,15 +330,15 @@ const stats = [
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 28px;
     font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 28px;
   }
 
-  .eyebrow-dot {
+  .status-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--accent);
+    background: #2D9E5C;
     animation: pulse 2.4s ease-in-out infinite;
   }
 
@@ -193,179 +347,343 @@ const stats = [
     50% { opacity: 0.3; }
   }
 
-  .hero-title {
+  .hero-name {
     font-family: 'DM Serif Display', serif;
-    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-size: clamp(3.5rem, 8vw, 6rem);
     font-weight: 400;
-    line-height: 1.05;
+    line-height: 1.0;
     margin-bottom: 28px;
-    max-width: 700px;
+    letter-spacing: -0.01em;
   }
 
-  .hero-title em {
+  .hero-name em {
     font-style: italic;
     color: var(--accent);
   }
 
-  .hero-sub {
-    font-size: 1.1rem;
+  .hero-bio {
+    font-size: 1.05rem;
     color: var(--text-muted);
     line-height: 1.7;
-    max-width: 540px;
-    margin-bottom: 48px;
+    max-width: 520px;
+    margin-bottom: 32px;
   }
 
-  .hero-stats {
+  .hero-skills {
     display: flex;
-    gap: 40px;
-    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 36px;
+  }
+
+  .skill-tag {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+  }
+
+  .hero-links {
+    display: flex;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
-  .stat {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .stat-value {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem;
-    color: var(--text);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .cta-btn {
+  .link-btn {
     display: inline-flex;
     align-items: center;
-    padding: 12px 28px;
-    background: var(--accent);
-    color: #080B10;
-    font-weight: 600;
-    font-size: 15px;
+    padding: 10px 22px;
     border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
     text-decoration: none;
     transition: opacity 0.15s;
   }
-  .cta-btn:hover { opacity: 0.88; }
 
-  /* Section label */
-  .section-label {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 40px 20px;
+  .link-btn:hover { opacity: 0.82; }
+
+  .link-btn.primary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
   }
 
-  .section-label span {
+  .link-btn.secondary {
+    background: var(--accent);
+    color: #080B10;
+    font-weight: 600;
+  }
+
+  /* Sections */
+  .section {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 64px 32px;
+  }
+
+  .section-label {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
     font-family: 'JetBrains Mono', monospace;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
-    display: block;
+    margin-bottom: 32px;
   }
 
-  /* Cards */
-  .cards-section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 40px 80px;
-    width: 100%;
+  .section-header-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
   }
 
-  .cards {
+  .section-header-row .section-label { margin-bottom: 0; }
+
+  .see-all {
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .section-intro {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* About */
+  .about-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 1fr 220px;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .about-text p:last-child { margin-bottom: 0; }
+
+  .about-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .meta-link {
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* Projects */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
   }
 
-  .card {
+  .project-card {
     display: flex;
     flex-direction: column;
-    padding: 28px;
+    padding: 24px;
     background: var(--surface);
     text-decoration: none;
     transition: background 0.15s;
+    position: relative;
   }
 
-  .card:hover {
-    background: #131920;
+  .project-card:not(.placeholder):hover { background: var(--surface-hover); }
+
+  .project-card.placeholder {
+    opacity: 0.45;
+    cursor: default;
   }
 
-  .card-badge {
+  .project-tag {
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent);
     font-family: 'JetBrains Mono', monospace;
     margin-bottom: 10px;
   }
 
-  .card-title {
-    font-size: 1rem;
+  .placeholder .project-tag { color: var(--text-muted); }
+
+  .project-name {
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text);
-    line-height: 1.35;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
   }
 
-  .card-desc {
+  .project-desc {
     font-size: 13px;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: 1.55;
     flex: 1;
-    margin-bottom: 20px;
   }
 
-  .card-arrow {
-    font-size: 13px;
+  .project-arrow {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    transition: color 0.15s;
+  }
+
+  .project-card:not(.placeholder):hover .project-arrow { color: var(--accent); }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 40px 0;
+  }
+
+  .empty-icon {
+    font-size: 24px;
+    color: var(--border);
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Notes */
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .note-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+  }
+
+  .note-item:hover { background: var(--surface-hover); }
+
+  .note-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  .note-title {
+    font-size: 13px;
     font-weight: 500;
+    color: var(--text-muted);
+    flex: 1;
+  }
+
+  .note-item:hover .note-title { color: var(--text); }
+
+  .note-arrow {
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: transform 0.15s, color 0.15s;
+  }
+
+  .note-item:hover .note-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
   }
 
   /* Footer */
   .footer {
-    margin-top: auto;
-    border-top: 1px solid var(--border);
-    padding: 24px 40px;
-    text-align: center;
+    padding: 28px 32px;
   }
 
-  .footer p {
+  .footer-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 13px;
     color: var(--text-muted);
   }
 
-  .footer a {
-    color: var(--accent);
+  .footer-inner a {
+    color: var(--text-muted);
     text-decoration: none;
   }
 
+  .footer-inner a:hover { color: var(--accent); }
+  .footer-sep { opacity: 0.4; }
+
   /* Responsive */
-  @media (max-width: 640px) {
-    .hero { padding: 64px 20px 48px; }
-    .cards-section { padding: 0 20px 60px; }
-    .section-label { padding: 0 20px 16px; }
-    .topbar-inner { padding: 0 20px; }
-    .footer { padding: 20px; }
-    .hero-stats { gap: 24px; }
-    .cards { grid-template-columns: 1fr; }
+  @media (max-width: 700px) {
+    .topbar-nav { display: none; }
+    .mobile-menu-btn { display: flex; }
+
+    .hero { padding: 64px 20px 56px; }
+    .section-inner { padding: 48px 20px; }
+    .footer { padding: 24px 20px; }
+
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .hero-name { font-size: 3rem; }
+    .projects-grid { grid-template-columns: 1fr; }
   }
 </style>
