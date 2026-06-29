@@ -1,7 +1,7 @@
 ---
 title: "Workflow Runtime — Internals"
 description: "Claude Code workflow runtime internals reverse-engineered from the shipped binary (v2.1.193). Bun executable, sandboxed JS VM, concurrency model."
-order: 5
+order: 3
 badge: "Reverse Engineered"
 ---
 # Claude Code Workflow Runtime — Internals (reverse-engineered)
