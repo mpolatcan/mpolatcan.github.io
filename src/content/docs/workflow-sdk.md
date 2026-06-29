@@ -4,8 +4,6 @@ description: "Complete API reference for Claude Code dynamic workflow scripts �
 order: 1
 badge: "API Reference"
 ---
-# Dynamic Workflows — Scripting API Reference
-
 > Authoring reference for **dynamic workflow** scripts — JavaScript programs that orchestrate many subagents deterministically and run in the background.
 
 - **Language:** plain JavaScript (ES2020+). **Not** TypeScript — type annotations, interfaces, generics fail to parse.
@@ -241,8 +239,8 @@ flowchart LR
         B1[stage 1] --> B2[stage 2] --> B3[stage 3]
     end
     A1 -.no wait for B.-> A2
-    classDef s fill:#e8f0fe,stroke:#4285f4;
-    class A1,A2,A3,B1,B2,B3 s;
+    classDef s fill:#0F1419,stroke:#1E2830,color:#E8E4DB
+    class A1,A2,A3,B1,B2,B3 s
 ```
 
 #### Example
