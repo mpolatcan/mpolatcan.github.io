@@ -212,6 +212,16 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     --max-w: 860px;
   }
 
+  ::selection {
+    background: rgba(229, 136, 79, 0.2);
+    color: var(--text);
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
@@ -314,11 +324,26 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   .hero {
     padding: 88px 32px 80px;
     border-bottom: 1px solid var(--border);
+    position: relative;
+    background-image: radial-gradient(circle, rgba(229, 136, 79, 0.1) 1px, transparent 1px);
+    background-size: 28px 28px;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .hero-inner {
     max-width: var(--max-w);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
 
   .hero-status {
@@ -406,9 +431,15 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   .link-btn:hover { opacity: 0.82; }
 
   .link-btn.primary {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
+    background: transparent;
+    border: 1px solid rgba(229, 136, 79, 0.4);
+    color: var(--accent);
+  }
+
+  .link-btn.primary:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    opacity: 1;
   }
 
   .link-btn.secondary {
@@ -470,7 +501,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
   }
 
   .about-text p {
-    color: var(--text-muted);
+    color: var(--text);
     line-height: 1.75;
     margin-bottom: 16px;
   }
@@ -622,7 +653,6 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     text-transform: uppercase;
     color: var(--accent);
     font-family: 'JetBrains Mono', monospace;
-    min-width: 90px;
     flex-shrink: 0;
   }
 

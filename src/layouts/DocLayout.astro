@@ -145,11 +145,14 @@ const currentId = doc?.id;
     </div>
   </div>
 
+  <div id="read-progress" aria-hidden="true"></div>
+
   <script is:inline>
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
     const closeBtn = document.getElementById('sidebarClose');
+    const progress = document.getElementById('read-progress');
 
     function openSidebar() {
       sidebar.classList.add('open');
@@ -163,6 +166,16 @@ const currentId = doc?.id;
     menuBtn?.addEventListener('click', openSidebar);
     closeBtn?.addEventListener('click', closeSidebar);
     overlay?.addEventListener('click', closeSidebar);
+
+    function updateProgress() {
+      var el = document.documentElement;
+      var scrolled = el.scrollTop || document.body.scrollTop;
+      var total = el.scrollHeight - el.clientHeight;
+      var pct = total > 0 ? (scrolled / total) * 100 : 0;
+      if (progress) progress.style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
   </script>
 </body>
 </html>
@@ -292,7 +305,7 @@ const currentId = doc?.id;
   }
 
   .nav-item.active {
-    background: var(--accent-dim);
+    background: linear-gradient(90deg, var(--accent-dim), transparent);
     color: var(--text);
     border-left: 2px solid var(--accent);
   }
@@ -425,8 +438,20 @@ const currentId = doc?.id;
     color: var(--text);
     margin-top: 52px;
     margin-bottom: 16px;
-    padding-bottom: 8px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .content h2::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 32px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
   }
 
   .content h3 {
@@ -494,14 +519,14 @@ const currentId = doc?.id;
 
   .content blockquote {
     border-left: 3px solid var(--accent);
-    padding: 12px 20px;
-    margin: 20px 0;
+    padding: 14px 20px;
+    margin: 24px 0;
     background: var(--accent-dim);
     border-radius: 0 6px 6px 0;
-    color: var(--text-muted);
+    color: var(--text);
   }
 
-  .content blockquote p { margin-bottom: 0; }
+  .content blockquote p { margin-bottom: 0; color: var(--text); }
 
   .content ul, .content ol {
     padding-left: 24px;
@@ -567,6 +592,51 @@ const currentId = doc?.id;
   .content p:has(> strong:only-child) strong,
   .content li > strong:first-child {
     color: var(--accent);
+  }
+
+  /* Reading progress bar */
+  #read-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--accent);
+    z-index: 9999;
+    transition: width 0.1s linear;
+    pointer-events: none;
+  }
+
+  /* Selection highlight */
+  ::selection {
+    background: rgba(229, 136, 79, 0.2);
+    color: var(--text);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* Scroll offset for anchors under sticky topbar */
+  .content h2, .content h3, .content h4 {
+    scroll-margin-top: calc(var(--topbar-h) + 20px);
+  }
+
+  /* Keyboard focus */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* Table row hover */
+  .content tbody tr:hover td {
+    background: rgba(229, 136, 79, 0.04);
   }
 
   /* Responsive */
