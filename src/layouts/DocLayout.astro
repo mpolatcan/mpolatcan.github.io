@@ -44,6 +44,7 @@ const docSections = [...sectionMap.entries()].map(([slug, docs]) => ({
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script is:inline>
     mermaid.initialize({ startOnLoad: false });
     document.addEventListener('DOMContentLoaded', function() {
@@ -102,7 +103,55 @@ const docSections = [...sectionMap.entries()].map(([slug, docs]) => ({
           fontSize:                '14px',
         }
       });
-      mermaid.run();
+      mermaid.run().then(function() {
+        document.querySelectorAll('.mermaid').forEach(function(el) {
+          var svg = el.querySelector('svg');
+          if (!svg || el.dataset.pzInit) return;
+          el.dataset.pzInit = '1';
+
+          // Let svg-pan-zoom control sizing
+          svg.removeAttribute('style');
+          svg.setAttribute('width', '100%');
+          svg.setAttribute('height', '100%');
+
+          // Size container to natural diagram height, clamped
+          var naturalH = svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal.height : 0;
+          el.style.height = Math.max(220, Math.min(naturalH + 48, 560)) + 'px';
+
+          // Inject controls
+          var ctrl = document.createElement('div');
+          ctrl.className = 'mermaid-controls';
+          ctrl.innerHTML =
+            '<button class="mermaid-ctrl-btn" data-a="in"    title="Zoom in">+</button>' +
+            '<button class="mermaid-ctrl-btn" data-a="out"   title="Zoom out">−</button>' +
+            '<button class="mermaid-ctrl-btn" data-a="reset" title="Reset">⦿</button>';
+          el.appendChild(ctrl);
+
+          try {
+            var pz = svgPanZoom(svg, {
+              zoomEnabled: true,
+              panEnabled: true,
+              controlIconsEnabled: false,
+              fit: true,
+              center: true,
+              minZoom: 0.3,
+              maxZoom: 8,
+              zoomScaleSensitivity: 0.25,
+            });
+
+            ctrl.addEventListener('click', function(e) {
+              var btn = e.target.closest('[data-a]');
+              if (!btn) return;
+              var a = btn.dataset.a;
+              if (a === 'in') pz.zoomIn();
+              else if (a === 'out') pz.zoomOut();
+              else { pz.resetZoom(); pz.resetPan(); pz.fit(); pz.center(); }
+            });
+          } catch (err) {
+            console.warn('svg-pan-zoom init failed:', err);
+          }
+        });
+      });
     });
   </script>
 </head>
@@ -595,16 +644,55 @@ const docSections = [...sectionMap.entries()].map(([slug, docs]) => ({
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 24px;
     margin: 20px 0;
-    overflow-x: auto;
-    text-align: center;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    min-height: 220px;
   }
 
+  .content .mermaid:active { cursor: grabbing; }
+
   .content .mermaid svg {
-    max-width: 100%;
-    height: auto;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
+    display: block;
+  }
+
+  .mermaid-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 3px;
+    z-index: 10;
+    background: rgba(7, 7, 26, 0.80);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px;
+    backdrop-filter: blur(6px);
+  }
+
+  .mermaid-ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
+  }
+
+  .mermaid-ctrl-btn:hover {
+    color: var(--accent);
+    background: var(--surface-hover);
   }
 
   /* Status badges in content */
