@@ -43,13 +43,49 @@ const currentId = doc?.id;
       });
       mermaid.initialize({
         startOnLoad: false,
-        theme: 'dark',
+        theme: 'base',
         themeVariables: {
-          background: '#0D1117',
-          primaryColor: '#1E2830',
-          primaryTextColor: '#E8E4DB',
-          lineColor: '#E5884F',
-          edgeLabelBackground: '#0F1419'
+          background:              '#080B10',
+          primaryColor:            '#0F1419',
+          primaryBorderColor:      '#1E2830',
+          primaryTextColor:        '#E8E4DB',
+          secondaryColor:          '#141C25',
+          secondaryBorderColor:    '#1E2830',
+          secondaryTextColor:      '#E8E4DB',
+          tertiaryColor:           '#1E2830',
+          tertiaryBorderColor:     '#243040',
+          tertiaryTextColor:       '#E8E4DB',
+          lineColor:               '#E5884F',
+          edgeLabelBackground:     '#0F1419',
+          clusterBkg:              '#0D1117',
+          clusterBorder:           '#1E2830',
+          titleColor:              '#E8E4DB',
+          noteBkgColor:            '#141C25',
+          noteBorderColor:         '#1E2830',
+          noteTextColor:           '#8A9BB0',
+          actorBkg:                '#0F1419',
+          actorBorder:             '#1E2830',
+          actorTextColor:          '#E8E4DB',
+          actorLineColor:          '#1E2830',
+          signalColor:             '#8A9BB0',
+          signalTextColor:         '#E8E4DB',
+          activationBkgColor:      '#141C25',
+          activationBorderColor:   '#E5884F',
+          labelBoxBkgColor:        '#0F1419',
+          labelBoxBorderColor:     '#1E2830',
+          labelTextColor:          '#E8E4DB',
+          loopTextColor:           '#E8E4DB',
+          sequenceNumberColor:     '#E5884F',
+          fillType0:               '#0F1419',
+          fillType1:               '#141C25',
+          fillType2:               '#1E2830',
+          fillType3:               '#0F1419',
+          fillType4:               '#141C25',
+          fillType5:               '#1E2830',
+          fillType6:               '#0F1419',
+          fillType7:               '#141C25',
+          fontFamily:              'Inter, sans-serif',
+          fontSize:                '14px',
         }
       });
       mermaid.run();
@@ -356,9 +392,10 @@ const currentId = doc?.id;
 
   /* Content */
   .content {
-    max-width: 800px;
+    max-width: 960px;
     padding: 48px 48px 96px;
     width: 100%;
+    margin: 0 auto;
   }
 
   /* Overlay */
@@ -518,6 +555,12 @@ const currentId = doc?.id;
     margin: 20px 0;
     overflow-x: auto;
     text-align: center;
+  }
+
+  .content .mermaid svg {
+    max-width: 100%;
+    height: auto;
+    font-family: 'Inter', sans-serif !important;
   }
 
   /* Status badges in content */
