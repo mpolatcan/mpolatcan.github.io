@@ -1,0 +1,534 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  doc?: CollectionEntry<'docs'>;
+  title?: string;
+  description?: string;
+}
+
+const { doc, title: pageTitle, description: pageDesc } = Astro.props;
+const title = doc?.data.title ?? pageTitle ?? 'Claude Code Workflow Reference';
+const description = doc?.data.description ?? pageDesc ?? '';
+
+const allDocs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+const currentId = doc?.id;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} — Claude Code Workflow Reference</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script is:inline>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { background: '#0D1117', primaryColor: '#1E2830', primaryTextColor: '#E8E4DB', lineColor: '#E5884F', edgeLabelBackground: '#0F1419' } });
+  </script>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="logo">
+          <span class="logo-mark">▸</span>
+          <span class="logo-text">CC Workflow<br/><em>Reference</em></span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
+      </div>
+
+      <div class="sidebar-section-label">Documentation</div>
+      <nav class="sidebar-nav">
+        {allDocs.map(d => (
+          <a
+            href={`/docs/${d.id.replace('.md', '')}/`}
+            class:list={['nav-item', { active: d.id === currentId }]}
+          >
+            <span class="nav-badge">{d.data.badge}</span>
+            <span class="nav-title">{d.data.title}</span>
+          </a>
+        ))}
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="https://github.com/mpolatcan/mpolatcan.github.io" target="_blank" rel="noopener" class="footer-link">
+          GitHub
+        </a>
+        <span class="footer-sep">·</span>
+        <span class="footer-note">v2.1.193</span>
+      </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="/" class="topbar-home">← Home</a>
+        <div class="topbar-title">{title}</div>
+      </header>
+
+      <main class="content">
+        <slot />
+      </main>
+    </div>
+  </div>
+
+  <script is:inline>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+    const closeBtn = document.getElementById('sidebarClose');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('visible');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('visible');
+    }
+
+    menuBtn?.addEventListener('click', openSidebar);
+    closeBtn?.addEventListener('click', closeSidebar);
+    overlay?.addEventListener('click', closeSidebar);
+  </script>
+</body>
+</html>
+
+<style is:global>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080B10;
+    --surface: #0F1419;
+    --surface-hover: #141C25;
+    --border: #1E2830;
+    --text: #E8E4DB;
+    --text-muted: #8A9BB0;
+    --accent: #E5884F;
+    --accent-dim: rgba(229, 136, 79, 0.08);
+    --code-bg: #0D1117;
+    --sidebar-w: 260px;
+    --topbar-h: 52px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.25s ease;
+  }
+
+  .sidebar-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .logo-mark {
+    color: var(--accent);
+    font-size: 20px;
+    line-height: 1;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .logo-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+  }
+
+  .logo-text em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--accent);
+    display: block;
+  }
+
+  .sidebar-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    display: none;
+  }
+
+  .sidebar-section-label {
+    padding: 16px 20px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 4px 10px;
+  }
+
+  .nav-item {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .nav-item:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: var(--accent-dim);
+    color: var(--text);
+    border-left: 2px solid var(--accent);
+  }
+
+  .nav-badge {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .nav-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .sidebar-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer-link {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .footer-link:hover { color: var(--accent); }
+  .footer-sep { opacity: 0.4; }
+
+  /* Main wrapper */
+  .main-wrapper {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* Topbar */
+  .topbar {
+    height: var(--topbar-h);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    background: rgba(8, 11, 16, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 50;
+  }
+
+  .menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .menu-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text-muted);
+    border-radius: 2px;
+  }
+
+  .topbar-home {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .topbar-home:hover { color: var(--accent); }
+
+  .topbar-title {
+    font-size: 13px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Content */
+  .content {
+    max-width: 800px;
+    padding: 48px 48px 96px;
+    width: 100%;
+  }
+
+  /* Overlay */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 90;
+  }
+  .overlay.visible { display: block; }
+
+  /* Markdown content styles */
+  .content h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 16px;
+    margin-top: 0;
+  }
+
+  .content h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 52px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .content h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 32px;
+    margin-bottom: 10px;
+  }
+
+  .content h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  .content p {
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .content a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(229, 136, 79, 0.3);
+    transition: border-color 0.15s;
+  }
+
+  .content a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  .content code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: #79C0FF;
+  }
+
+  .content pre {
+    background: var(--code-bg) !important;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-size: 0.84em;
+    line-height: 1.6;
+  }
+
+  .content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1em;
+    color: inherit;
+  }
+
+  .content blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 12px 20px;
+    margin: 20px 0;
+    background: var(--accent-dim);
+    border-radius: 0 6px 6px 0;
+    color: var(--text-muted);
+  }
+
+  .content blockquote p { margin-bottom: 0; }
+
+  .content ul, .content ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+
+  .content li {
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+  }
+
+  .content th {
+    background: var(--surface);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .content td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .content tr:last-child td { border-bottom: none; }
+
+  .content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* Mermaid diagrams */
+  .content .mermaid {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  /* Status badges in content */
+  .content p:has(> strong:only-child) strong,
+  .content li > strong:first-child {
+    color: var(--accent);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-close { display: block; }
+    .menu-btn { display: flex; }
+
+    .main-wrapper {
+      margin-left: 0;
+    }
+
+    .topbar {
+      padding: 0 16px;
+    }
+
+    .content {
+      padding: 32px 20px 64px;
+    }
+
+    .content h1 { font-size: 1.8rem; }
+  }
+</style>

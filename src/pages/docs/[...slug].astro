@@ -1,0 +1,62 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocLayout from '../../layouts/DocLayout.astro';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map(doc => ({
+    params: { slug: doc.id.replace('.md', '') },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content } = await render(doc);
+---
+
+<DocLayout doc={doc}>
+  <article>
+    <div class="doc-header">
+      <span class="doc-badge">{doc.data.badge}</span>
+      <h1>{doc.data.title}</h1>
+      {doc.data.description && <p class="doc-desc">{doc.data.description}</p>}
+    </div>
+    <Content />
+  </article>
+</DocLayout>
+
+<style>
+  .doc-header {
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 12px;
+  }
+
+  .doc-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .doc-desc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    max-width: 600px;
+    margin-bottom: 0;
+  }
+</style>
