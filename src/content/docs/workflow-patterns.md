@@ -1,10 +1,10 @@
 ---
-title: "Workflow Design Patterns"
+title: "Dynamic Workflows — Design Patterns"
 description: "Design patterns for Claude Code workflow scripts — reverse-engineered from the shipped production workflows plus canonical patterns from published sources."
 order: 2
 badge: "Patterns"
 ---
-# Workflow Design Patterns
+# Dynamic Workflows — Design Patterns
 
 > Two complementary lenses: **Part A** reverse-engineers the two *production* workflow scripts shipped in Claude Code v2.1.193 (`code-review` and `deep-research`) — these are patterns Anthropic actually ships. **Part B** maps canonical patterns from published sources (Anthropic's own guidance + multi-agent literature) onto the SDK primitives. Each part informs the other.
 

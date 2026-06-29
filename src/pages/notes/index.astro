@@ -5,11 +5,11 @@ import DocLayout from '../../layouts/DocLayout.astro';
 const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<DocLayout title="Notes" description="Claude Code Workflow Reference — reverse-engineered internals, SDK reference, and design patterns.">
+<DocLayout title="Notes" description="Claude Code Dynamic Workflows — reverse-engineered internals, SDK reference, and design patterns.">
   <div class="notes-header">
     <span class="eyebrow">Notes</span>
-    <h1>Claude Code Workflow Reference</h1>
-    <p>Unofficial, community-maintained reference for Claude Code's Workflow scripting API — reverse-engineered from the binary. These docs cover what the official site doesn't.</p>
+    <h1>Claude Code Dynamic Workflows</h1>
+    <p>Unofficial, community-maintained reference for Claude Code's dynamic workflow scripting API — reverse-engineered from the binary. These docs cover what the official site doesn't.</p>
   </div>
 
   <div class="doc-list">

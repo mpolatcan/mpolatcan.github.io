@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { doc, title: pageTitle, description: pageDesc } = Astro.props;
-const title = doc?.data.title ?? pageTitle ?? 'Claude Code Workflow Reference';
+const title = doc?.data.title ?? pageTitle ?? 'Claude Code Dynamic Workflows';
 const description = doc?.data.description ?? pageDesc ?? '';
 
 const allDocs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
@@ -21,7 +21,7 @@ const currentId = doc?.id;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title} — Claude Code Workflow Reference</title>
+  <title>{title} — Claude Code Dynamic Workflows</title>
   <meta name="description" content={description} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
@@ -99,7 +99,7 @@ const currentId = doc?.id;
       <div class="sidebar-header">
         <a href="/" class="logo">
           <span class="logo-mark">▸</span>
-          <span class="logo-text">CC Workflow<br/><em>Reference</em></span>
+          <span class="logo-text">CC Dynamic<br/><em>Workflows</em></span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
       </div>

@@ -1,10 +1,10 @@
 ---
-title: "Workflow Scripting API Reference"
+title: "Dynamic Workflows — Scripting API Reference"
 description: "Complete API reference for Claude Code dynamic workflow scripts — agent(), pipeline(), parallel(), phase(), log(), and globals."
 order: 1
 badge: "API Reference"
 ---
-# Workflow Scripting API Reference
+# Dynamic Workflows — Scripting API Reference
 
 > Authoring reference for **dynamic workflow** scripts — JavaScript programs that orchestrate many subagents deterministically and run in the background.
 
@@ -485,7 +485,7 @@ Proven: resuming the color/fruit demo returned the **identical** result with `su
 
 ## 10. Patterns
 
-> 🔎 **Full pattern catalog:** see the companion [Workflow Design Patterns](/notes/workflow-patterns/) doc — shipped patterns reverse-engineered from the binary, canonical patterns from external sources, and a master reference map.
+> 🔎 **Full pattern catalog:** see the companion [Dynamic Workflows — Design Patterns](/notes/workflow-patterns/) doc — shipped patterns reverse-engineered from the binary, canonical patterns from external sources, and a master reference map.
 >
 > Backbone of the shipped workflows: **Scope → fan-out Find → stream Verify → Synthesize**. Load-bearing rules:
 > - **`pipeline` find→verify, no barrier** — verify each finder's candidates as soon as it returns.

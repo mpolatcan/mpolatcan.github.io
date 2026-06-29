@@ -1,10 +1,10 @@
 ---
-title: "Workflow Runtime — Internals"
+title: "Dynamic Workflows — Runtime Internals"
 description: "Claude Code workflow runtime internals reverse-engineered from the shipped binary (v2.1.193). Bun executable, sandboxed JS VM, concurrency model."
 order: 3
 badge: "Reverse Engineered"
 ---
-# Claude Code Workflow Runtime — Internals (reverse-engineered)
+# Dynamic Workflows — Runtime Internals (reverse-engineered)
 
 > Derived by reverse-engineering the Claude Code binary, **v2.1.193**, by grepping the embedded JS for the exact error strings the black-box tests triggered, then extracting and beautifying the surrounding minified code. Everything here is read off the shipped bundle; line references are into a locally beautified extract, not stable across versions.
 
