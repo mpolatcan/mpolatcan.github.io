@@ -17,7 +17,7 @@ badge: "Reverse Engineered"
 | Size | ~212 MB |
 | Source | JavaScript is **embedded as plaintext** inside the binary (greppable); the workflow stack traces (`/$bunfs/root/src/entrypoints/cli.js`) are Bun's in-binary virtual FS |
 
-The workflow runtime lives in two code regions: a **tool-layer validator** (~byte 186M) and the **VM runtime** (~byte 208M). The split matters — see §4.
+The workflow runtime lives in two code regions: a **tool-layer validator** (~byte 186M) and the **VM runtime** (~byte 208M). The split matters — see Section 4.
 
 ## 2. Engine: it's `node:vm`, not a Worker
 
@@ -195,16 +195,16 @@ logs[], abortController, agentControllers: Map
 
 | Earlier observation | Internals cause |
 |---------------------|-----------------|
-| `args` arrives as a string | top-level args path JSON round-trips an already-encoded value (§7) |
-| `console.log` works | `console` shim routes to `hooks.log` (§5) |
-| `setTimeout` works, `setInterval` absent | only `setTimeout`/`clearTimeout` injected (§5) |
-| `Date.now`/`Math.random`/`new Date` rejected, uncatchable | static submit scan, Layer A, before run (§4) |
-| `new Date(0)` also rejected | token scan trips on `new Date(` even though runtime shim would allow it (§4) |
+| `args` arrives as a string | top-level args path JSON round-trips an already-encoded value (Section 7) |
+| `console.log` works | `console` shim routes to `hooks.log` (Section 5) |
+| `setTimeout` works, `setInterval` absent | only `setTimeout`/`clearTimeout` injected (Section 5) |
+| `Date.now`/`Math.random`/`new Date` rejected, uncatchable | static submit scan, Layer A, before run (Section 4) |
+| `new Date(0)` also rejected | token scan trips on `new Date(` even though runtime shim would allow it (Section 4) |
 | no in-script clock | `Date` shimmed + `performance` never injected |
-| 4096-item cap, catchable | enforced in the boundary cloner as a normal throw (§6) |
-| nesting depth 1, catchable in child | child `workflow` global is a rejecting stub (§5) |
+| 4096-item cap, catchable | enforced in the boundary cloner as a normal throw (Section 6) |
+| nesting depth 1, catchable in child | child `workflow` global is a rejecting stub (Section 5) |
 | `effort`/unknown opts lenient; `agentType`/`isolation` strict | opts cloned & forwarded to host `hooks.agent`; validation happens host-side per-opt |
-| resume = 0 tokens, instant | journal replay against the run-state model (§9) |
+| resume = 0 tokens, instant | journal replay against the run-state model (Section 9) |
 
 ---
 

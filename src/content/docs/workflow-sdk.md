@@ -682,7 +682,7 @@ So on a machine with N cores: `min(16, max(2, N-2))`. The public "min(16, cpu-2)
 
 - `pipeline()` validates every stage is a function (line 6663): `pipeline() stages must be functions: pipeline(items, item => ..., result => ...)`.
 - Both enforce the 4096 array cap inside the boundary cloner (catchable).
-- `parallel()` thunk errors become `null` only for **async** rejections; a synchronous throw escapes the `.map` and fails the run (see §6).
+- `parallel()` thunk errors become `null` only for **async** rejections; a synchronous throw escapes the `.map` and fails the run (see Section 6).
 
 ### Net additions vs the public SDK
 
