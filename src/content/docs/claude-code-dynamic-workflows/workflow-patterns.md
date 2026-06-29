@@ -38,7 +38,7 @@ flowchart LR
     PL --> F1["Finder 1"]
     PL --> F2["Finder 2"]
     PL --> FN["Finder N..."]
-    classDef pivot fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef pivot fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class SC pivot
 ```
 
@@ -102,7 +102,7 @@ flowchart LR
     par --> REFU["REFUTED ✗"]
     CONF & PLAUS --> surv["surviving[]"]
     REFU -.->|"filtered out"| drop((" "))
-    classDef pass fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef pass fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     classDef fail fill:#0F1419,stroke:#1E2830,color:#8A9BB0
     class CONF,PLAUS pass
     class REFU fail
@@ -141,7 +141,7 @@ flowchart LR
     V0 & V1 & V2 --> Q{"valid ≥ 2\nAND refuted < 2?"}
     Q -->|"yes — 1/3 refuted"| S["survives ✓"]
     Q -->|"no — or too many abstains"| K["killed ✗"]
-    classDef gate fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef gate fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class Q gate
 ```
 
@@ -172,7 +172,7 @@ flowchart LR
     end
     VA & VB & VC --> SY["Synthesize agent\nmerge dups · rank · cap"]
     SY --> R["final findings\n(A+C merged, B separate)"]
-    classDef synth fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef synth fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class SY synth
 ```
 
@@ -207,7 +207,7 @@ flowchart LR
     SA -->|"new candidates"| NV["parallel verify"]
     SA -->|"nothing new → empty list"| DONE
     NV --> V2["verified + new → Synthesize"]
-    classDef gate fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef gate fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class EG gate
 ```
 
@@ -231,7 +231,7 @@ flowchart LR
     VR["verify all candidates"] --> Q{"confirmed.length === 0?"}
     Q -->|"yes"| EX["return early\n{findings:[], summary:…\nstats:{confirmed:0}}"]
     Q -->|"no"| SY["Synthesize → report"]
-    classDef gate fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef gate fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class Q gate
 ```
 
@@ -259,7 +259,7 @@ flowchart LR
     E -->|"xhigh"| X["angles: 5\nperAngle: 8\nmaxFindings: 15\nsweep: true"]
     E -->|"max"| M["angles: 5\nperAngle: 8\nmaxFindings: 15\nsweep: true\n+ higher reasoning"]
     classDef cfg fill:#141C25,stroke:#1E2830,color:#E8E4DB
-    classDef gate fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef gate fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class H,X,M cfg
     class E gate
 ```
@@ -337,7 +337,7 @@ flowchart TB
     AL --> EO["Evaluator-Optimizer<br/>(generate↔critique loop)"]
     OW --> AUT["Autonomous Agent<br/>(agent decides steps)"]
     classDef wf fill:#0F1419,stroke:#1E2830,color:#E8E4DB
-    classDef pivot fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef pivot fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class CH,RT,PAR,OW,EO wf
     class AL pivot
 ```
@@ -362,7 +362,7 @@ flowchart LR
     G1 -->|"yes"| S2["agent()\nstep 2"]
     S2 --> S3["agent()\nstep N"]
     S3 --> R([output])
-    classDef gate fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef gate fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class G1 gate
 ```
 
@@ -390,7 +390,7 @@ flowchart LR
     CL -->|"general"| H3["GENERAL agent"]
     CL -->|"unknown"| H4["FALLBACK agent"]
     H1 & H2 & H3 & H4 --> R([result])
-    classDef cl fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef cl fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class CL cl
 ```
 
@@ -438,7 +438,7 @@ flowchart LR
     R0 & R1 & R2 --> C{"vulnerable\n≥ 2/3?"}
     C -->|"yes"| F(["flagged"])
     C -->|"no"| OK(["pass"])
-    classDef gate fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef gate fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class C gate
 ```
 
@@ -467,7 +467,7 @@ flowchart TB
     P --> WN["Worker N"]
     W1 & W2 & WN --> S["Synthesize\nagent()"]
     S --> R([report])
-    classDef lead fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef lead fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     classDef w fill:#141C25,stroke:#1E2830,color:#E8E4DB
     class L,S lead
     class W1,W2,WN w
@@ -495,7 +495,7 @@ flowchart LR
     E -->|"score < 0.9\nAND i < 4"| RF["Refine\nagent()"]
     RF --> E
     E -->|"score ≥ 0.9\nOR i = 4"| R([final draft])
-    classDef loop fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef loop fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class E loop
 ```
 
@@ -516,7 +516,7 @@ flowchart LR
     S["agent()\nagentType: general-purpose\nisolation: worktree\neffort: high"] --> T["subagent\nruns its own loop\ntools + ground truth"]
     T -->|"next step"| T
     T -->|"done"| R([result])
-    classDef box fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef box fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class S box
 ```
 
@@ -572,7 +572,7 @@ flowchart LR
     L --> E2["Execute step 2"]
     L --> EN["Execute step N"]
     E1 & E2 & EN --> R([result])
-    classDef pivot fill:#0F1419,stroke:#E5884F,color:#E8E4DB
+    classDef pivot fill:#0F1419,stroke:#6EE7B7,color:#E8E4DB
     class L pivot
 ```
 

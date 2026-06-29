@@ -207,13 +207,13 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     --border: #1E2830;
     --text: #E8E4DB;
     --text-muted: #8A9BB0;
-    --accent: #E5884F;
-    --accent-dim: rgba(229, 136, 79, 0.08);
+    --accent: #6EE7B7;
+    --accent-dim: rgba(110, 231, 183, 0.08);
     --max-w: 860px;
   }
 
   ::selection {
-    background: rgba(229, 136, 79, 0.2);
+    background: rgba(110, 231, 183, 0.2);
     color: var(--text);
   }
 
@@ -325,7 +325,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     padding: 88px 32px 80px;
     border-bottom: 1px solid var(--border);
     position: relative;
-    background-image: radial-gradient(circle, rgba(229, 136, 79, 0.1) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(110, 231, 183, 0.1) 1px, transparent 1px);
     background-size: 28px 28px;
     overflow: hidden;
   }
@@ -363,7 +363,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #2D9E5C;
+    background: var(--accent);
     animation: pulse 2.4s ease-in-out infinite;
   }
 
@@ -432,7 +432,7 @@ const skills = ['Kubernetes', 'AWS', 'Go', 'Terraform', 'Python', 'Scala', 'Kafk
 
   .link-btn.primary {
     background: transparent;
-    border: 1px solid rgba(229, 136, 79, 0.4);
+    border: 1px solid rgba(110, 231, 183, 0.4);
     color: var(--accent);
   }
 

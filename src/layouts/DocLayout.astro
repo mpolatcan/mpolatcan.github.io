@@ -14,6 +14,20 @@ const description = doc?.data.description ?? pageDesc ?? '';
 
 const allDocs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
 const currentId = doc?.id;
+
+const formatSectionLabel = (slug: string) =>
+  slug === '_root' ? 'General' :
+  slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+const sectionMap = new Map<string, typeof allDocs>();
+for (const d of allDocs) {
+  const key = d.id.includes('/') ? d.id.split('/')[0] : '_root';
+  if (!sectionMap.has(key)) sectionMap.set(key, []);
+  sectionMap.get(key)!.push(d);
+}
+const docSections = [...sectionMap.entries()].map(([slug, docs]) => ({
+  slug, label: formatSectionLabel(slug), docs,
+}));
 ---
 
 <!doctype html>
@@ -55,7 +69,7 @@ const currentId = doc?.id;
           tertiaryColor:           '#1E2830',
           tertiaryBorderColor:     '#243040',
           tertiaryTextColor:       '#E8E4DB',
-          lineColor:               '#E5884F',
+          lineColor:               '#6EE7B7',
           edgeLabelBackground:     '#0F1419',
           clusterBkg:              '#0D1117',
           clusterBorder:           '#1E2830',
@@ -70,12 +84,12 @@ const currentId = doc?.id;
           signalColor:             '#8A9BB0',
           signalTextColor:         '#E8E4DB',
           activationBkgColor:      '#141C25',
-          activationBorderColor:   '#E5884F',
+          activationBorderColor:   '#6EE7B7',
           labelBoxBkgColor:        '#0F1419',
           labelBoxBorderColor:     '#1E2830',
           labelTextColor:          '#E8E4DB',
           loopTextColor:           '#E8E4DB',
-          sequenceNumberColor:     '#E5884F',
+          sequenceNumberColor:     '#6EE7B7',
           fillType0:               '#0F1419',
           fillType1:               '#141C25',
           fillType2:               '#1E2830',
@@ -99,23 +113,27 @@ const currentId = doc?.id;
       <div class="sidebar-header">
         <a href="/" class="logo">
           <span class="logo-mark">▸</span>
-          <span class="logo-text">CC Dynamic<br/><em>Workflows</em></span>
+          <span class="logo-text">Claude Code<br/><em>Dynamic Workflows</em></span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
       </div>
 
-      <div class="sidebar-section-label">Documentation</div>
-      <nav class="sidebar-nav">
-        {allDocs.map(d => (
-          <a
-            href={`/notes/${d.id.replace('.md', '')}/`}
-            class:list={['nav-item', { active: d.id === currentId }]}
-          >
-            <span class="nav-badge">{d.data.badge}</span>
-            <span class="nav-title">{d.data.title}</span>
-          </a>
-        ))}
-      </nav>
+      {docSections.map(section => (
+        <div>
+          <div class="sidebar-section-label">{section.label}</div>
+          <nav class="sidebar-nav">
+            {section.docs.map(d => (
+              <a
+                href={`/notes/${d.id.replace('.md', '')}/`}
+                class:list={['nav-item', { active: d.id === currentId }]}
+              >
+                <span class="nav-badge">{d.data.badge}</span>
+                <span class="nav-title">{d.data.title}</span>
+              </a>
+            ))}
+          </nav>
+        </div>
+      ))}
 
       <div class="sidebar-footer">
         <a href="https://github.com/mpolatcan/mpolatcan.github.io" target="_blank" rel="noopener" class="footer-link">
@@ -190,8 +208,8 @@ const currentId = doc?.id;
     --border: #1E2830;
     --text: #E8E4DB;
     --text-muted: #8A9BB0;
-    --accent: #E5884F;
-    --accent-dim: rgba(229, 136, 79, 0.08);
+    --accent: #6EE7B7;
+    --accent-dim: rgba(110, 231, 183, 0.08);
     --code-bg: #0D1117;
     --sidebar-w: 260px;
     --topbar-h: 52px;
@@ -251,7 +269,7 @@ const currentId = doc?.id;
 
   .logo-text {
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     line-height: 1.3;
     letter-spacing: 0.01em;
@@ -260,7 +278,7 @@ const currentId = doc?.id;
   .logo-text em {
     font-family: 'DM Serif Display', serif;
     font-style: italic;
-    font-size: 15px;
+    font-size: 13px;
     color: var(--accent);
     display: block;
   }
@@ -480,7 +498,7 @@ const currentId = doc?.id;
   .content a {
     color: var(--accent);
     text-decoration: none;
-    border-bottom: 1px solid rgba(229, 136, 79, 0.3);
+    border-bottom: 1px solid rgba(110, 231, 183, 0.3);
     transition: border-color 0.15s;
   }
 
@@ -609,7 +627,7 @@ const currentId = doc?.id;
 
   /* Selection highlight */
   ::selection {
-    background: rgba(229, 136, 79, 0.2);
+    background: rgba(110, 231, 183, 0.2);
     color: var(--text);
   }
 
@@ -636,7 +654,7 @@ const currentId = doc?.id;
 
   /* Table row hover */
   .content tbody tr:hover td {
-    background: rgba(229, 136, 79, 0.04);
+    background: rgba(110, 231, 183, 0.04);
   }
 
   /* Responsive */

@@ -2,40 +2,61 @@
 import { getCollection } from 'astro:content';
 import DocLayout from '../../layouts/DocLayout.astro';
 
-const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+const allDocs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+
+const formatSectionName = (slug: string) =>
+  slug === '_root' ? 'General' :
+  slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+const sectionMap = new Map<string, typeof allDocs>();
+for (const doc of allDocs) {
+  const key = doc.id.includes('/') ? doc.id.split('/')[0] : '_root';
+  if (!sectionMap.has(key)) sectionMap.set(key, []);
+  sectionMap.get(key)!.push(doc);
+}
+const sections = [...sectionMap.entries()].map(([slug, docs]) => ({
+  slug, name: formatSectionName(slug), docs,
+}));
 ---
 
-<DocLayout title="Notes" description="Claude Code Dynamic Workflows — reverse-engineered internals, SDK reference, and design patterns.">
+<DocLayout title="Notes" description="Research notes, reverse-engineered docs, and technical writing on infrastructure and tooling.">
   <div class="notes-header">
     <span class="eyebrow">Notes</span>
-    <h1>Claude Code Dynamic Workflows</h1>
-    <p>Unofficial, community-maintained reference for Claude Code's dynamic workflow scripting API — reverse-engineered from the binary. These docs cover what the official site doesn't.</p>
+    <h1>Writing &amp; Research</h1>
+    <p>Technical notes on things I'm investigating — infrastructure patterns, tooling internals, workflow scripting. Mostly things I had to figure out the hard way.</p>
   </div>
 
-  <div class="doc-list">
-    {docs.map((doc, i) => (
-      <a href={`/notes/${doc.id.replace('.md', '')}/`} class="doc-item">
-        <span class="doc-num">{String(i + 1).padStart(2, '0')}</span>
-        <div class="doc-info">
-          <span class="doc-badge">{doc.data.badge}</span>
-          <span class="doc-title">{doc.data.title}</span>
-          {doc.data.description && <span class="doc-desc">{doc.data.description}</span>}
-        </div>
-        <span class="doc-arrow">→</span>
-      </a>
-    ))}
-  </div>
+  {sections.map(section => (
+    <div class="section-group">
+      <div class="section-heading">
+        <span class="section-mark">▸</span>
+        <span>{section.name}</span>
+        <span class="section-count">{section.docs.length} {section.docs.length === 1 ? 'doc' : 'docs'}</span>
+      </div>
+      <div class="doc-list">
+        {section.docs.map((doc, i) => (
+          <a href={`/notes/${doc.id.replace('.md', '')}/`} class="doc-item">
+            <span class="doc-num">{String(i + 1).padStart(2, '0')}</span>
+            <div class="doc-info">
+              <span class="doc-badge">{doc.data.badge}</span>
+              <span class="doc-title">{doc.data.title}</span>
+              {doc.data.description && <span class="doc-desc">{doc.data.description}</span>}
+            </div>
+            <span class="doc-arrow">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  ))}
 
   <div class="notes-meta">
-    <span>v2.1.193 binary</span>
-    <span>·</span>
     <span>Not affiliated with Anthropic</span>
   </div>
 </DocLayout>
 
 <style>
   .notes-header {
-    margin-bottom: 48px;
+    margin-bottom: 52px;
     padding-bottom: 40px;
     border-bottom: 1px solid var(--border);
   }
@@ -53,7 +74,7 @@ const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.
 
   .notes-header h1 {
     font-family: 'DM Serif Display', serif;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     font-weight: 400;
     line-height: 1.15;
     margin-bottom: 14px;
@@ -67,11 +88,39 @@ const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.
     margin-bottom: 0;
   }
 
+  .section-group {
+    margin-bottom: 48px;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .section-mark {
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.6;
+  }
+
   .doc-list {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    margin-bottom: 48px;
   }
 
   .doc-item {
@@ -85,9 +134,7 @@ const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.
     transition: background 0.15s;
   }
 
-  .doc-item:hover {
-    background: var(--surface-hover);
-  }
+  .doc-item:hover { background: var(--surface-hover); }
 
   .doc-num {
     font-family: 'JetBrains Mono', monospace;
@@ -144,7 +191,7 @@ const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.
     font-size: 12px;
     color: var(--text-muted);
     font-family: 'JetBrains Mono', monospace;
-    display: flex;
-    gap: 8px;
+    opacity: 0.5;
+    margin-top: 16px;
   }
 </style>
